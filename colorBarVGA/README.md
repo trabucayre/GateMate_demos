@@ -6,9 +6,13 @@ bars
 
 
 To use the design with PMOD-VGA from [Muse
-lab](https://www.tindie.com/products/johnnywu/pmod-vga-expansion-board/), rename
-file `colorBarVGA_muselab.ccf` to `colorBarVGA.ccf` (colors could be wrong, but
-syncro will be ok).
+lab](https://www.tindie.com/products/johnnywu/pmod-vga-expansion-board/), add
+`VGA=muselab` option to make (colors could be wrong, but syncro will be ok) :
+
+```
+$ make VGA=muselab
+```
+
 
 Note: due to PMOD level shifters **JP14** must be mounted between 2-3 (2v5)
 

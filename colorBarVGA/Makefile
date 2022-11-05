@@ -7,8 +7,9 @@ P_R   = $(CC_TOOL)/bin/p_r/p_r
 
 PRFLAGS = --verbose
 
+VGA    ?= digilent
 TOP    = colorBarVGA
-CONSTR = $(TOP).ccf
+CONSTR = $(TOP)_$(VGA).ccf
 
 OBJS += $(TOP).v
 OBJS += ../libs/graphics/vga_core.v
