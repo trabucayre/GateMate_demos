@@ -13,7 +13,9 @@ syncro will be ok).
 Note: due to PMOD level shifters **JP14** must be mounted between 2-3 (2v5)
 
 - With Digilent adapt :
+
 ![ColorBarDemo](gatemateVGA.jpg)
 
-- With Muse Lab adapt
+- With Muse Lab adapt :
+
 ![ColorBarDemo](gatemateVGA_muselab.jpg)
