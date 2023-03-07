@@ -15,17 +15,17 @@ CONSTR = $(TOP).ccf
 OBJS += $(TOP).v
 OBJS += ../libs/graphics/color_bar_shade.v
 OBJS += ../libs/clocks/gatemate_25MHz_125MHz_pll.v
-OBJS += ../libs//graphics/vga_core.v
-OBJS += ../libs//graphics/dvi_core.v
-OBJS += ../libs//graphics/tmds_encoder.v
-OBJS += ../libs//ios/serializer_gatemate_10_to_1_generic_ddr.v
+OBJS += ../libs/graphics/vga_core.v
+OBJS += ../libs/graphics/dvi_core.v
+OBJS += ../libs/graphics/tmds_encoder.v
+OBJS += ../libs/ios/serializer_gatemate_10_to_1_generic_ddr.v
 
 YS_OPTS = -D DISP_640x480_60Hz=1
 
 all:impl
 synth: $(TOP)_synth.v
 $(TOP)_synth.v: $(OBJS)
-	$(YOSYS) -ql synth.log $(YS_OPTS) -p 'read -sv $^; synth_gatemate -top $(TOP) -nomx8 -vlog $(TOP)_synth.v'
+	$(YOSYS) -ql synth.log $(YS_OPTS) -p 'read_verilog -sv $^; synth_gatemate -top $(TOP) -nomx8 -vlog $(TOP)_synth.v'
 
 $(TOP)_00.cfg: $(TOP)_synth.v $(CONSTR)
 	$(P_R) -i $(TOP)_synth.v -ccf $(CONSTR) -o $(TOP) $(PRFLAGS) > $@.log
