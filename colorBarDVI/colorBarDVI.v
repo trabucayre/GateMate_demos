@@ -8,22 +8,28 @@
 `default_nettype none
 
 module colorBarDVI (
-	input  wire       clk_i, 
-	input  wire       rstn_i,
+	input  wire       clk_i,
 	output wire       TMDS_0_clk_p,
 	output wire       TMDS_0_clk_n,
 	output wire [2:0] TMDS_0_data_p,
 	output wire [2:0] TMDS_0_data_n
 );
+	wire TMDS_0_clk;
+	wire [2:0] TMDS_0_data;
+
+	CC_LVDS_OBUF lvds_obuf_inst [3:0] (
+		.A({TMDS_0_clk, TMDS_0_data}),
+		.O_P({TMDS_0_clk_n, TMDS_0_data_n}),
+		.O_N({TMDS_0_clk_p, TMDS_0_data_p})
+	);
+
 	/* PLL: 25MHz (pix clock) and 125MHz (hdmi clk rate) */
 	wire clk_pix, clk_dvi, lock;
 	pll pll_inst (
-		.clock_in(clk_i),  // 10 MHz
-		.rst_in(~rstn_i),
-		.clock0_out(clk_pix), //  25 MHz, 0 deg
-		.clock1_out(clk_dvi), // 125 MHz, 0 deg
-		.clock0_lock(lock),
-		.clock1_lock()
+		.clock_in(clk_i),       //  10 MHz reference
+		.clock_out(clk_pix),    //  25 MHz, 0 deg
+		.clock_5x_out(clk_dvi), // 125 MHz, 0 deg
+		.lock_out(lock)
 	);
 
 	wire rst = ~lock;
@@ -48,7 +54,7 @@ module colorBarDVI (
 	wire       blank2_s, vsync2_s, hsync2_s;
 
 	color_bar #(
-		.H_RES(80), .PIX_SZ(8)
+		.H_RES(HRES/8), .PIX_SZ(8)
 	) col_inst (
 		.i_clk(clk_pix), .i_rst(rst),
 		.i_blank(~de_s),
@@ -67,9 +73,7 @@ module colorBarDVI (
 		// pixel colors
 		.pix_r(r_s), .pix_g(g_s), .pix_b(b_s),
 		// output signals
-		.TMDS_clk_p(TMDS_0_clk_p),
-		.TMDS_clk_n(TMDS_0_clk_n),
-		.TMDS_data_p(TMDS_0_data_p),
-		.TMDS_data_n(TMDS_0_data_n)
+		.TMDS_clk(TMDS_0_clk),
+		.TMDS_data(TMDS_0_data)
 	);
 endmodule
