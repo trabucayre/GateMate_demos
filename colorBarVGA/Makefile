@@ -5,7 +5,7 @@ CC_TOOL_DIR=$(CC_TOOL)
 YOSYS = $(CC_TOOL)/bin/yosys/yosys
 P_R   = $(CC_TOOL)/bin/p_r/p_r
 
-PRFLAGS = --verbose
+PRFLAGS = --verbose -cCP
 
 VGA    ?= digilent
 TOP    = colorBarVGA
@@ -18,6 +18,12 @@ OBJS += ../libs/clocks/gatemate_25MHz_pll.v
 
 YS_OPTS = -D DISP_640x480_60Hz=1
 
+ifeq ($(VGA), olimex)
+CABLE=dirtyJtag
+else
+CABLE=gatemate_evb_jtag
+endif
+
 all:impl
 synth: $(TOP)_synth.v
 $(TOP)_synth.v: $(OBJS)
@@ -28,10 +34,10 @@ $(TOP)_00.cfg: $(TOP)_synth.v $(CONSTR)
 impl:$(TOP)_00.cfg
 
 jtag: $(TOP)_00.cfg
-	$(OFL) $(OFLFLAGS) -b gatemate_evb_jtag $^
+	$(OFL) $(OFLFLAGS) -b $(CABLE) $^
 
 jtag-flash: $(TOP)_00.cfg
-	$(OFL) $(OFLFLAGS) -b gatemate_evb_jtag -f --verify $^
+	$(OFL) $(OFLFLAGS) -b $(CABLE) -f --verify $^
 
 clean:
 	$(RM) *.log *_synth.v *.history *.txt *.refwire *.refparam

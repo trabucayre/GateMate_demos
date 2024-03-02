@@ -13,8 +13,15 @@ lab](https://www.tindie.com/products/johnnywu/pmod-vga-expansion-board/), add
 $ make VGA=muselab
 ```
 
+And with [Olimex GateMateA1 EVB](https://www.olimex.com/Products/FPGA/GateMate/GateMateA1-EVB/open-source-hardware),
+add `VGA=olimex`
 
-Note: due to PMOD level shifters **JP14** must be mounted between 2-3 (2v5)
+```
+$ make VGA=olimex
+```
+
+
+Note: (*digilent* and *muselab*) due to PMOD level shifters **JP14** must be mounted between 2-3 (2v5)
 
 - With Digilent adapt :
 
@@ -23,3 +30,7 @@ Note: due to PMOD level shifters **JP14** must be mounted between 2-3 (2v5)
 - With Muse Lab adapt :
 
 ![ColorBarDemo](gatemateVGA_muselab.jpg)
+
+- With Olimex GateMateA1 EVB:
+
+![ColorBarDemo](gatemateVGA_olimex.jpg)
