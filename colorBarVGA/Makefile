@@ -19,9 +19,9 @@ OBJS += ../libs/clocks/gatemate_25MHz_pll.v
 YS_OPTS = -D DISP_640x480_60Hz=1
 
 ifeq ($(VGA), olimex)
-CABLE=dirtyJtag
+BOARD=olimex_gatemateevb
 else
-CABLE=gatemate_evb_jtag
+BOARD=gatemate_evb_jtag
 endif
 
 all:impl
@@ -34,10 +34,10 @@ $(TOP)_00.cfg: $(TOP)_synth.v $(CONSTR)
 impl:$(TOP)_00.cfg
 
 jtag: $(TOP)_00.cfg
-	$(OFL) $(OFLFLAGS) -b $(CABLE) $^
+	$(OFL) $(OFLFLAGS) -b $(BOARD) $^
 
 jtag-flash: $(TOP)_00.cfg
-	$(OFL) $(OFLFLAGS) -b $(CABLE) -f --verify $^
+	$(OFL) $(OFLFLAGS) -b $(BOARD) -f --verify $^
 
 clean:
 	$(RM) *.log *_synth.v *.history *.txt *.refwire *.refparam
