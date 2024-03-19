@@ -1,6 +1,10 @@
 `default_nettype none
 
-module colorBarVGAPS2 (
+module colorBarVGAPS2
+#(
+  parameter ps2core = 2 // 0-minimig 1-oberon 2 keyboard
+)
+(
 	input  wire       clk_i, 
 	input  wire       rstn_i,
 	output wire [3:0] o_r,
@@ -29,15 +33,85 @@ pll pll_inst (
 assign o_clk = 1'b0;//clk_pix;
 assign o_rst = 1'b0;//lock;
 
-wire [7:0] ps2_code;
+reg [19:0] reset_counter;
+always @(posedge clk_pix)
+begin
+  if(rstn_i == 1'b1 && reset_counter[19] == 1'b0)
+    reset_counter <= reset_counter + 1;
+  if(rstn_i == 1'b0)
+    reset_counter <= 0;
+end
+wire reset;
+assign reset = reset_counter[19];
 
-ps2kbd kbd(clk_pix, ps2clk, ps2data, ps2_code, , );
+wire mouse_update;
+wire [10:0] mouse_x, mouse_y, mouse_z;
+wire [2:0] mouse_btn;
+
+wire [7:0] ps2_keyboard_code;
+
+generate
+  if(ps2core == 0) // using minimig core
+  begin
+    wire ps2mdat_in, ps2mclk_in, ps2mdat_out, ps2mclk_out;
+    assign ps2clk = ps2mclk_out ? 1'bz : 1'b0;
+    assign ps2data = ps2mdat_out ? 1'bz : 1'b0;
+    assign ps2mclk_in = ps2clk;
+    assign ps2mdat_in = ps2data;
+    ps2mouse
+    #(
+      .c_x_bits(11),
+      .c_y_bits(11)
+    )
+    ps2mouse_minimig_inst
+    (
+      .clk(clk_pix),
+      .reset(reset),
+      .ps2mdati(ps2mdat_in),
+      .ps2mclki(ps2mclk_in),
+      .ps2mdato(ps2mdat_out),
+      .ps2mclko(ps2mclk_out),
+      .xcount(mouse_x),
+      .ycount(mouse_y),
+      .btn(mouse_btn)
+    );
+    assign mouse_update = 1'b1;
+  end
+  if(ps2core == 1) // using oberon core
+  begin
+    mousem
+    #(
+      .c_x_bits(11),
+      .c_y_bits(11),
+      .c_z_bits(11),
+      .c_hotplug(1)
+    )
+    ps2mouse_oberon_inst
+    (
+      .clk(clk_pix),
+      .clk_ena(1'b1),
+      .ps2m_reset(reset),
+      .ps2m_clk(ps2clk),
+      .ps2m_dat(ps2data),
+      .update(mouse_update),
+      .x(mouse_x),
+      .y(mouse_y),
+      .z(mouse_z),
+      .btn(mouse_btn)
+    );
+  end
+  if(ps2core == 2) // using oberon core
+  begin
+	ps2kbd kbd(clk_pix, ps2clk, ps2data, ps2_keyboard_code, , );
+  end
+
+endgenerate
 
     parameter C_bits = 16; // can be 8 bu easier to read if some bits are 0x00
     reg [C_bits-1:0] R_display; // something to display
     always @(posedge clk_pix)
     begin
-      R_display[7:0] <= ps2_code;
+      R_display[7:0] <= ps2_keyboard_code;
     end
 
     parameter C_color_bits = 16; 
