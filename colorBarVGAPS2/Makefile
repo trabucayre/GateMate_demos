@@ -12,11 +12,11 @@ TOP    = colorBarVGAPS2
 CONSTR = $(TOP)_$(VGA).ccf
 
 OBJS += $(TOP).v
-OBJS += hdl/ps2kbd.v
-OBJS += hdl/vga.v
-OBJS += hdl/hex_decoder_v.v
-OBJS += hdl/ps2mouse.v
-OBJS += hdl/mousem_v.v
+OBJS += ../libs/hdl/ps2kbd.v
+OBJS += ../libs/hdl/vga.v
+OBJS += ../libs/hdl/hex_decoder_v.v
+OBJS += ../libs/hdl/ps2mouse.v
+OBJS += ../libs/hdl/mousem_v.v
 OBJS += ../libs/graphics/vga_core.v
 OBJS += ../libs/graphics/color_bar.v
 OBJS += ../libs/clocks/gatemate_25MHz_pll.v
