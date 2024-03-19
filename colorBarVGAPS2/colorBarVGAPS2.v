@@ -1,22 +1,24 @@
+// Mouse needs pins to be IN/OUT if I set pins as INOUT in CCF then keyboard does not work
+
 `default_nettype none
 
 module colorBarVGAPS2
 #(
-  parameter ps2core = 2 // 0-minimig 1-oberon 2 keyboard
+  parameter ps2core = 2 // 0-minimig 1-oberon 2-keyboard
 )
 (
-	input  wire       clk_i, 
-	input  wire       rstn_i,
-	output wire [3:0] o_r,
-	output wire [3:0] o_g,
-	output wire [3:0] o_b,
-	output wire       o_vsync,
-	output wire       o_hsync,
-	output wire       o_clk,
-	output wire       o_rst,
-	input wire ps2clk,
-	input wire ps2data,
-	output wire o_led
+	input clk_i, 
+	input rstn_i,
+	output [3:0] o_r,
+	output [3:0] o_g,
+	output [3:0] o_b,
+	output o_vsync,
+	output o_hsync,
+	output o_clk,
+	output o_rst,
+	inout ps2clk,
+	inout ps2data,
+	output o_led
 );
 
 wire clk_pix, lock;
@@ -45,10 +47,10 @@ wire reset;
 assign reset = reset_counter[19];
 
 wire mouse_update;
-wire [10:0] mouse_x, mouse_y, mouse_z;
-wire [2:0] mouse_btn;
+reg [10:0] mouse_x, mouse_y, mouse_z;
+reg [2:0] mouse_btn;
 
-wire [7:0] ps2_keyboard_code;
+reg [7:0] ps2_keyboard_code;
 
 generate
   if(ps2core == 0) // using minimig core
@@ -107,10 +109,16 @@ generate
 
 endgenerate
 
-    parameter C_bits = 16; // can be 8 bu easier to read if some bits are 0x00
+    parameter C_bits = 64; // can be 8 bu easier to read if some bits are 0x00
     reg [C_bits-1:0] R_display; // something to display
     always @(posedge clk_pix)
     begin
+      R_display[63:47] <= mouse_x;
+      R_display[46:36] <= mouse_x;
+      R_display[35:25] <= mouse_y;
+      R_display[24:14] <= mouse_z;
+      R_display[13:11] <= mouse_btn;
+      R_display[10:8] <= 2'b00;
       R_display[7:0] <= ps2_keyboard_code;
     end
 
@@ -123,7 +131,7 @@ endgenerate
     hex_decoder_v
     #(
         .c_data_len(C_bits),
-        .c_row_bits(3), // 2**n digits per row (4*2**n bits/row) 3->32, 4->64, 5->128, 6->256 
+        .c_row_bits(4), // 2**n digits per row (4*2**n bits/row) 3->32, 4->64, 5->128, 6->256 
         .c_grid_6x8(0), // NOTE: TRELLIS needs -abc9 option to compile
         .c_font_file("hex/hex_font.mem"),
         .c_x_bits(8),
@@ -139,7 +147,7 @@ endgenerate
         .color(color)
     );
 
-	assign o_led = lock; 
+	assign o_led = reset; 
 
 	assign o_r = color[15:12];
 	assign o_g = color[10:7];
