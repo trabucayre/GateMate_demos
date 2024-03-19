@@ -33,11 +33,11 @@ wire [7:0] ps2_code;
 
 ps2kbd kbd(clk_pix, ps2clk, ps2data, ps2_code, , );
 
-    parameter C_bits = 8;
+    parameter C_bits = 16; // can be 8 bu easier to read if some bits are 0x00
     reg [C_bits-1:0] R_display; // something to display
     always @(posedge clk_pix)
     begin
-      R_display[7:0] <= ps2_code; //btn[0];
+      R_display[7:0] <= ps2_code;
     end
 
     parameter C_color_bits = 16; 
@@ -68,7 +68,7 @@ ps2kbd kbd(clk_pix, ps2clk, ps2data, ps2_code, , );
 	assign o_led = lock; 
 
 	assign o_r = color[15:12];
-	assign o_g = color[10:6];
+	assign o_g = color[10:7];
 	assign o_b = color[4:1];
 
 	wire vga_hsync, vga_vsync, vga_blank;
