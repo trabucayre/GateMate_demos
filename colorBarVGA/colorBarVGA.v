@@ -30,6 +30,7 @@ pll pll_inst (
 `endif
 assign o_clk = 1'b0;//clk_pix;
 assign o_rst = 1'b0;//lock;
+wire   rst_s = ~lock;
 
 localparam
 	HRES = 640,
@@ -43,7 +44,7 @@ wire de_s;
 
 vga_core #(
 	.HSZ(HSZ), .VSZ(VSZ)
-) vga_inst (.clk_i(clk_pix), .rst_i(~lock),
+) vga_inst (.clk_i(clk_pix), .rst_i(rst_s),
 	.hcount_o(hcount_s), .vcount_o(v_count_s),
 	.de_o(de_s),
 	.vsync_o(o_vsync), .hsync_o(o_hsync)
@@ -53,7 +54,7 @@ wire [3:0] r_s, g_s, b_s;
 color_bar #(
     .H_RES(80), .PIX_SZ(4)
 ) col_inst (
-	.i_clk(clk_pix), .i_rst(~lock),
+	.i_clk(clk_pix), .i_rst(rst_s),
 	.i_blank(~de_s),
 	.o_r(o_r), .o_g(o_g), .o_b(o_b)
 );
@@ -61,7 +62,7 @@ color_bar #(
 assign o_led = 8'b0;
 //blinker #(.MAX(25_000_000)
 //) blink_inst (
-//	.i_clk(clk_pix), .i_rst(~lock), .o_led(o_led)
+//	.i_clk(clk_pix), .i_rst(rst_s), .o_led(o_led)
 //);
 
 endmodule
