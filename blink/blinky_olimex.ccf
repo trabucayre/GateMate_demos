@@ -1,0 +1,4 @@
+## blink.ccf
+
+Pin_in   "clk" Loc = "IO_SB_A8" | SCHMITT_TRIGGER=true;
+Pin_out "leds" Loc = "IO_SB_B6"; # LED D1
