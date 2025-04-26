@@ -1,0 +1,38 @@
+OFL     = openFPGALoader
+RM      = rm -rf
+YOSYS   = yosys
+GMPACK  = gmpack
+NEXTPNR = $(shell which nextpnr-himbaechel-gatemate)
+
+YS_PARAMS += -nomx8
+
+ifeq ($(NEXTPNR),)
+NEXTPNR = $(shell which nextpnr-himbaechel)
+endif
+
+all: $(TOP).bit
+
+$(TOP).json: $(OBJS)
+	@echo "Running Yosys"
+	$(YOSYS) -ql synth.log $(YS_OPTS) -p 'read_verilog $(YS_SYNTH_PARAMS) -sv $^; synth_gatemate $(YS_PARAMS) -luttree -top $(TOP) -json $(TOP).json'
+
+$(TOP).txt: $(TOP).json $(CCF)
+	@echo "Running nextpnr for '$(BOARD)' board"
+	$(NEXTPNR) --device CCGM1A1 --json $(TOP).json --vopt ccf=$(CCF) --vopt out=$(TOP).txt --router router2
+
+$(TOP).bit: $(TOP).txt
+	$(GMPACK) $(TOP).txt $(TOP).bit
+
+load: jtag
+jtag: $(TOP).bit
+	$(OFL) $(OFLFLAGS) -b $(BOARD) $^
+
+jtag-flash: $(TOP).bit
+	$(OFL) $(OFLFLAGS) -b $(BOARD) -f --verify $^
+
+
+clean:
+	@$(RM) blinky_00* *.id *.PRN *.net *.pathes *.pos *.refcomp *.refparam *.refwire
+	@$(RM) blinky_synth.v *.TXT *.log lut*.txt *.prn *.txt *.json abc.history *.bit
+	@$(RM) *.bit *.json *.txt
+
