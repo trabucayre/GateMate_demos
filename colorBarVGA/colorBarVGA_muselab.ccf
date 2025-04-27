@@ -20,14 +20,3 @@ Pin_out "o_b[2]"  Loc = "IO_NB_B6"; #JB3
 Pin_out "o_b[3]"  Loc = "IO_NB_B7"; #JB4
 Pin_out "o_hsync" Loc = "IO_NB_A4"; #JB7
 Pin_out "o_vsync" Loc = "IO_NB_A5"; #JB8
-
-# leds
-Pin_out   "o_led[0]"   Loc = "IO_EB_B1"; # LED D1
-Pin_out   "o_led[1]"   Loc = "IO_EB_B2"; # LED D2
-Pin_out   "o_led[2]"   Loc = "IO_EB_B3"; # LED D3
-Pin_out   "o_led[3]"   Loc = "IO_EB_B4"; # LED D4
-Pin_out   "o_led[4]"   Loc = "IO_EB_B5"; # LED D5
-Pin_out   "o_led[5]"   Loc = "IO_EB_B6"; # LED D6
-Pin_out   "o_led[6]"   Loc = "IO_EB_B7"; # LED D7
-Pin_out   "o_led[7]"   Loc = "IO_EB_B8"; # LED D8
-
