@@ -1,7 +1,7 @@
 /*
  * colorBarDVI.v
  *
- * Copyright (C) 2022  Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
+ * Copyright (C) 2022-2025  Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
  * SPDX-License-Identifier: MIT
  */
 
@@ -14,13 +14,13 @@ module colorBarDVI (
 	output wire [2:0] TMDS_0_data_p,
 	output wire [2:0] TMDS_0_data_n
 );
-	wire TMDS_0_clk;
+	wire       TMDS_0_clk;
 	wire [2:0] TMDS_0_data;
 
-	CC_LVDS_OBUF lvds_obuf_inst [3:0] (
-		.A({TMDS_0_clk, TMDS_0_data}),
-		.O_P({TMDS_0_clk_n, TMDS_0_data_n}),
-		.O_N({TMDS_0_clk_p, TMDS_0_data_p})
+	CC_LVDS_OBUF lvds_obuf_inst [2:0] (
+		.A(  TMDS_0_data),
+		.O_P(TMDS_0_data_p),
+		.O_N(TMDS_0_data_n)
 	);
 
 	/* PLL: 25MHz (pix clock) and 125MHz (hdmi clk rate) */
@@ -30,6 +30,16 @@ module colorBarDVI (
 		.clock_out(clk_pix),    //  25 MHz, 0 deg
 		.clock_5x_out(clk_dvi), // 125 MHz, 0 deg
 		.lock_out(lock)
+	);
+
+	CC_LVDS_OBUF clk_lvds (
+`ifdef PN_SWAP
+		.A  (clk_pix),
+`else
+		.A  (~clk_pix),
+`endif
+		.O_P(TMDS_0_clk_p),
+		.O_N(TMDS_0_clk_n)
 	);
 
 	wire rst = ~lock;
@@ -42,7 +52,7 @@ module colorBarDVI (
 
 	wire de_s, hsync_s, vsync_s;
 
-    vga_core #(
+	vga_core #(
 		.HSZ(HSZ), .VSZ(VSZ)
 	) vga_inst (.clk_i(clk_pix), .rst_i (rst),
 		.hcount_o(), .vcount_o(),
