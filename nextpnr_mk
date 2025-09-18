@@ -18,7 +18,7 @@ $(TOP).json: $(OBJS)
 
 $(TOP).txt: $(TOP).json $(CCF)
 	@echo "Running nextpnr for '$(BOARD)' board"
-	$(NEXTPNR) --device CCGM1A1 --json $(TOP).json --vopt ccf=$(CCF) --vopt out=$(TOP).txt --router router2
+	$(NEXTPNR) --device CCGM1A1 --json $(TOP).json --vopt ccf=$(CCF) --vopt out=$(TOP).txt --router router2 --timing-allow-fail $(NEXTPNR_OPTS)
 
 $(TOP).bit: $(TOP).txt
 	$(GMPACK) $(TOP).txt $(TOP).bit
