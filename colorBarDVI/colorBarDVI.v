@@ -25,8 +25,11 @@ module colorBarDVI (
 
 	/* PLL: 25MHz (pix clock) and 125MHz (hdmi clk rate) */
 	wire clk_pix, clk_dvi, lock;
+	wire rst_n;
+	CC_USR_RSTN usr_rstn (.USR_RSTN(rst_n));
 	pll pll_inst (
 		.clock_in(clk_i),       //  10 MHz reference
+		.rstn_in(rst_n),        // reset input
 		.clock_out(clk_pix),    //  25 MHz, 0 deg
 		.clock_5x_out(clk_dvi), // 125 MHz, 0 deg
 		.lock_out(lock)
