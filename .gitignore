@@ -16,3 +16,4 @@
 *.pathes
 *.pos
 *.ref*
+__pycache__
