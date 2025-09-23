@@ -1,4 +1,4 @@
-DVI   ?= colognechip
+DVI   ?= machdyne
 TOOLCHAIN ?= nextpnr
 TOP    = colorBarDVI
 CCF    = $(DVI).ccf
