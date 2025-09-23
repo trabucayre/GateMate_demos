@@ -1,37 +1,54 @@
 # GateMate_demos
-gateware for [CologneChip](https://www.colognechip.com/) [GateMate Evaluation Board](https://www.colognechip.com/programmable-logic/gatemate-evaluation-board/)
 
-## Get
+Gateware examples for the [CologneChip GateMate Evaluation Board](https://www.colognechip.com/programmable-logic/gatemate-evaluation-board/).
 
-This repository uses [fgpalibs](https://github.com/trabucayre/fpgalibs) as
-submodule.
+## Get the Source
 
-To clone this repository:
+This repository uses [fpgalibs](https://github.com/trabucayre/fpgalibs) as a submodule.
 
-```
+Clone with submodules in one step:
+
+```bash
 git clone --recursive https://github.com/trabucayre/GateMate_demos
 ```
 
-Or
+Or clone and initialize submodules separately:
 
-```
+```bash
 git clone https://github.com/trabucayre/GateMate_demos
+cd GateMate_demos
 git submodule init
 git submodule update
 ```
 
-## Toolchain
+## Toolchains
 
-These demos requires to use CologneChip toolchain:
+These demos can be built using either:
 
-download
-[toolchain](https://www.colognechip.com/programmable-logic/gatemate/gatemate-download/)
+- The **CologneChip Legacy toolchain**
+- The **nextpnr + prjpeppercorn open-source flow**
 
-And extract archive content somewhere
+### CologneChip Toolchain
 
-now `CC_TOOL` env variable must be set:
+1. [Download the toolchain](https://colognechip.com/programmable-logic/gatemate/toolchain/).
+2. Extract the archive to a chosen location.
+3. Set the `CC_TOOL` environment variable:
 
+```bash
+export CC_TOOL=/path/to/cc-toolchain-linux
 ```
-export CC_TOOL=/somewhere/cc-toolchain-linux
+
+### NextPNR + Prjpeppercorn Toolchain
+
+The easiest method is to use the [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build/releases).
+
+1. Download and extract the latest release.
+2. Source the environment to add tools to your `\$PATH`:
+
+```bash
+source /path/to/oss-cad-suite/environment
 ```
 
+#### Alternate Method (TBD)
+
+You can also build **yosys**, **prjpeppercorn**, and **nextpnr** from source (instructions coming soon).
