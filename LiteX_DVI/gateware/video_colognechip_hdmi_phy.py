@@ -16,7 +16,7 @@ from litex.soc.cores.video import video_data_layout, _dvi_c2d, VideoHDMI10to1Ser
 class VideoCologneChipHDMI10to1Serializer2(LiteXModule):
     def __init__(self, data_i, data_o, clock_domain):
         # Clock Domain Crossing.
-        self.cdc = stream.ClockDomainCrossing([("data", 10)], cd_from=clock_domain, cd_to=clock_domain + "5x")
+        self.cdc = stream.ClockDomainCrossing([("data", 10)], cd_from=clock_domain, cd_to=clock_domain + "5x", depth=8, buffered=True)
         self.comb += self.cdc.sink.valid.eq(1)
         self.comb += self.cdc.sink.data.eq(data_i)
                              
