@@ -63,7 +63,7 @@ installing FPGA toolchain components manually.
 The script handles the following tasks:
 
 - checking and installing build dependencies
-- cloning, updating and checking out latest [gatemate-timings-latest](https://colognechip.com/downloads/gatemate-timings-latest.tar.gz)
+- cloning and updating repositories
 - building each specified tools
 - installing the resulting binaries into the */opt/gatemate* directory (default target path).
 

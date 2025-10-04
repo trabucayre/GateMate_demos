@@ -109,8 +109,6 @@ build_prjpeppercorn() {
 	repo=$WORK_DIR/$1
 	pushd $repo
 
-    sh delay.sh
-
     mkdir -p libgm/build
 
     pushd libgm/build
