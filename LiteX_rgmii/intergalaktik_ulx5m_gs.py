@@ -190,6 +190,7 @@ class _CRG(LiteXModule):
 
 class BaseSoC(SoCCore):
     def __init__(self, revision="0.3", sys_clk_freq=20e6, toolchain="colognechip",
+        with_sdram          = True,
         with_spi_flash      = False,
         with_ethernet       = False,
         with_etherbone      = False,
@@ -220,7 +221,7 @@ class BaseSoC(SoCCore):
                 sys_clk_freq = sys_clk_freq)
 
         # DRAM -------------------------------------------------------------------------------------
-        if not self.integrated_main_ram_size:
+        if with_sdram and not self.integrated_main_ram_size:
             self.sdrphy = GENSDRPHY(platform.request("sdram"), sys_clk_freq)
 
             self.add_sdram("sdram",
@@ -318,6 +319,8 @@ def main():
     parser = LiteXArgumentParser(platform=intergalaktik_ulx5m_gs_platform.Platform, description="LiteX SoC on ULX5M-GS")
     parser.add_target_argument("--sys-clk-freq",   default=20e6, type=float, help="System clock frequency.")
     parser.add_target_argument("--revision",       default="0.3",            help="Board revision (0.2 or 0.3).")
+
+    parser.add_target_argument("--disable-sdram",  action="store_true",      help="Disable SDRAM.")
     parser.add_target_argument("--with-spi-flash", action="store_true",      help="Enable SPI Flash (MMAPed).")
     sdopts = parser.target_group.add_mutually_exclusive_group()
     sdopts.add_argument("--with-spi-sdcard",       action="store_true",      help="Enable SPI-mode SDCard support.")
@@ -339,6 +342,7 @@ def main():
         revision       = args.revision,
         sys_clk_freq   = args.sys_clk_freq,
         toolchain      = args.toolchain,
+        with_sdram     = not args.disable_sdram,
         with_spi_flash = args.with_spi_flash,
         with_ethernet  = args.with_ethernet,
         with_etherbone = args.with_etherbone,

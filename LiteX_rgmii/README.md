@@ -20,7 +20,7 @@ Additionals options:
 ## Debug MDIO communication
 
 ```bash
-./intergalaktik_ulx5m_gs.py --with-eth-debug --cpu-type None --uart-name uartbone --csr-csv csr.csv --build --load
+./intergalaktik_ulx5m_gs.py --with-eth-debug --cpu-type None --uart-name uartbone --disable-sdram --csr-csv csr.csv --build --load
 ```
 
 In a first terminal:
