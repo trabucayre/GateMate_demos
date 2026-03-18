@@ -3,7 +3,7 @@
 ## Build
 
 ```bash
-./intergalaktik_ulx5m_gs.py --build --load [--with-etherbone] [--with-ethernet] [--with-eth-debug]
+./intergalaktik_ulx5m_gs.py --build --load [--with-etherbone] [--with-ethernet] [--with-eth-debug] [--cable]
 ```
 
 Where:
@@ -11,6 +11,7 @@ Where:
 - `--with-ethernet` to enable ethernet support
 - `--with-etherbone` to enable etherbone support
 - `--with-eth-debug` to enable PHY debug (MDIO)
+- `--cable` must be adapted to the JTAG probe in uses (default tigard. see `openFPGALoader --list-cables`)
 
 Additionals options:
 
@@ -20,7 +21,7 @@ Additionals options:
 ## Debug MDIO communication
 
 ```bash
-./intergalaktik_ulx5m_gs.py --with-eth-debug --cpu-type None --uart-name uartbone --disable-sdram --csr-csv csr.csv --build --load
+./intergalaktik_ulx5m_gs.py --with-eth-debug --cpu-type None --uart-name uartbone --disable-sdram --disable-leds --csr-csv csr.csv --build --load
 ```
 
 In a first terminal:
@@ -41,3 +42,10 @@ In a second terminal to dump registers:
 Where:
 - `phyadr` is a PHY address
 - `count` is the number of registers to dump
+
+`MDC`/`MDIO` signals are copied in RPI header IOs:
+- `mdc`: `GPIO26`
+- `mdio_i`: `GPIO19` (from PHY to FPGA
+- `mdio_o`: `GPIO13` (from FPGA to PHY
+- `mdio_io`: `GPIO06` according to `CC_IOBUF` is `mdio_o` or `mdio_i`
+
