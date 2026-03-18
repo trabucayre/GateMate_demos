@@ -117,7 +117,9 @@ class divide_2(LiteXModule):
 # CRG ----------------------------------------------------------------------------------------------
 
 class _CRG(LiteXModule):
-    def __init__(self, platform, sys_clk_freq, with_eth, with_video_pll=False, with_usb_pll=False):
+    def __init__(self, platform, sys_clk_freq, with_sdram, with_eth,
+        with_video_pll=False, with_usb_pll=False
+        ):
         self.rst       = Signal()
         rst_n          = Signal()
         self.cd_sys    = ClockDomain()
@@ -135,9 +137,10 @@ class _CRG(LiteXModule):
 
         pll.register_clkin(clk25, 25e6)
         pll.create_clkout(self.cd_sys, sys_clk_freq)
-        pll.create_clkout(self.cd_sys_ps, sys_clk_freq, phase=90)
         platform.add_period_constraint(self.cd_sys.clk, 1e9/sys_clk_freq)
-        self.specials += DDROutput(1, 0, platform.request("sdram_clock"), ClockSignal("sys_ps"))
+        if with_sdram:
+            pll.create_clkout(self.cd_sys_ps, sys_clk_freq, phase=90)
+            self.specials += DDROutput(1, 0, platform.request("sdram_clock"), ClockSignal("sys_ps"))
 
         if with_eth:
             self.comb += platform.request("eth_refclk" ).eq(clk25)
@@ -207,6 +210,7 @@ class BaseSoC(SoCCore):
 
         # CRG --------------------------------------------------------------------------------------
         self.crg = _CRG(platform, sys_clk_freq,
+            with_sdram     = with_sdram,
             with_eth       = with_ethernet or with_etherbone or with_eth_debug,
             with_video_pll = with_video_terminal
         )
@@ -319,8 +323,10 @@ def main():
     parser = LiteXArgumentParser(platform=intergalaktik_ulx5m_gs_platform.Platform, description="LiteX SoC on ULX5M-GS")
     parser.add_target_argument("--sys-clk-freq",   default=20e6, type=float, help="System clock frequency.")
     parser.add_target_argument("--revision",       default="0.3",            help="Board revision (0.2 or 0.3).")
+    parser.add_target_argument("--cable",          default="tigard",         help="JTAG cable name.")
 
     parser.add_target_argument("--disable-sdram",  action="store_true",      help="Disable SDRAM.")
+    parser.add_target_argument("--disable-leds",   action="store_true",      help="Disable SDRAM.")
     parser.add_target_argument("--with-spi-flash", action="store_true",      help="Enable SPI Flash (MMAPed).")
     sdopts = parser.target_group.add_mutually_exclusive_group()
     sdopts.add_argument("--with-spi-sdcard",       action="store_true",      help="Enable SPI-mode SDCard support.")
@@ -349,6 +355,7 @@ def main():
         with_eth_debug = args.with_eth_debug,
         eth_ip         = args.eth_ip,
         remote_ip      = args.remote_ip,
+        with_led_chaser= not args.disable_leds,
         eth_dynamic_ip = args.eth_dynamic_ip,
 
         **parser.soc_argdict)
@@ -363,7 +370,7 @@ def main():
         builder.build(**parser.toolchain_argdict)
 
     if args.load:
-        prog = soc.platform.create_programmer("digilent_hs2")
+        prog = soc.platform.create_programmer(args.cable)
         prog.load_bitstream(builder.get_bitstream_filename(mode="sram"))
 
 if __name__ == "__main__":
