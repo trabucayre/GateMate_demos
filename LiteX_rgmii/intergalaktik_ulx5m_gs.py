@@ -38,7 +38,8 @@ _custom_io = [
     ("gpio26", 1, Pins("IO_NB_A8")),
     ("eth_mdio", 0,
         Subsignal("mdc",     Pins(f"IO_EB_B6")),
-        Subsignal("mdio",    Pins(f"IO_EB_A6"), Misc("PULLUP=true")),
+        Subsignal("mdio",    Pins(f"IO_EB_A6") , Misc("PULLUP=true")),
+        Subsignal("rst_n",   Pins(f"IO_EB_B3") , Misc("PULLUP=true")),
     ),
 ]
 
@@ -298,6 +299,10 @@ class BaseSoC(SoCCore):
                         i_T   = ~data_oe,
                         io_IO = pads.mdio,
                     )
+
+                    if hasattr(pads, "rst_n"):
+                        self.comb += self.pads.rst_n.eq(~ResetSignal("sys"))
+
 
             # MDIO Test.
             self.eth_mdio = LiteEthPHYMDIO(pads=platform.request("eth_mdio", 0))
