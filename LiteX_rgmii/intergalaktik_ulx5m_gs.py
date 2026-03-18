@@ -41,6 +41,12 @@ _custom_io = [
         Subsignal("mdio",    Pins(f"IO_EB_A6") , Misc("PULLUP=true")),
         Subsignal("rst_n",   Pins(f"IO_EB_B3") , Misc("PULLUP=true")),
     ),
+    ("eth_mdio_debug", 0,
+        Subsignal("mdc",     Pins(f"IO_NB_A8")), # GPIO26
+        Subsignal("mdio_i",  Pins(f"IO_NB_B8")), # GPIO19
+        Subsignal("mdio_o",  Pins(f"IO_NB_A6")), # GPIO13
+        Subsignal("mdio_io", Pins(f"IO_NB_B6")), # GPIO06
+    )
 ]
 
 # Division by 5 module -----------------------------------------------------------------------------
@@ -306,6 +312,20 @@ class BaseSoC(SoCCore):
 
             # MDIO Test.
             self.eth_mdio = LiteEthPHYMDIO(pads=platform.request("eth_mdio", 0))
+
+            # MDIO debug signals.
+            mdio_debug = platform.request("eth_mdio_debug")
+
+            self.comb += [
+                mdio_debug.mdc.eq(self.eth_mdio.pads.mdc),
+                mdio_debug.mdio_o.eq(self.eth_mdio.data_w),
+                mdio_debug.mdio_i.eq(self.eth_mdio.data_r),
+                If(self.eth_mdio.data_oe,
+                    mdio_debug.mdio_io.eq(self.eth_mdio.data_w),
+                ).Else(
+                    mdio_debug.mdio_io.eq(self.eth_mdio.data_r),
+                )
+            ]
 
             #analyzer_signals = [
             #    self.eth_mdio.pads.mdc,
