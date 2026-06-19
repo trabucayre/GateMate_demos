@@ -100,8 +100,9 @@ clean_repo() {
 build_yosys() {
 	repo=$WORK_DIR/$1
 	pushd $repo
-	make -j$(nproc)
-	make install PREFIX=$INSTALL_PREFIX
+	cmake $CMAKE_OPTS . -B build -DYOSYS_INSTALL_LIBRARY=ON
+	cmake --build build -j$(nproc)
+	sudo cmake --install build
 	popd
 }
 
